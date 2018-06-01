@@ -2,7 +2,9 @@
   #:export (make-stream
             stream-car
             stream-cdr
-            stream-get-nth))
+            stream-next
+            stream-get-nth
+            natural-numbers))
 
 (define (make-stream proc start)
   (cons start
@@ -14,6 +16,8 @@
 (define (stream-cdr stream)
   ((cdr stream)))
 
+(define stream-next stream-cdr)  ; convenience procedure
+
 (define (stream-get-nth stream n)
   (cond [(= n 0)
          (stream-car stream)]
@@ -21,11 +25,47 @@
          (stream-get-nth (stream-cdr stream)
                          (- n 1))]))
 
-(make-stream (lambda (x) (+ x 1)) 0)
+(define natural-numbers
+  (make-stream (λ (x) (+ x 1))
+               0))
 
-(stream-get-nth (make-stream (lambda (x) (+ x 1)) 0)
+
+(define (numerator fraction)
+  (car fraction))
+(define (denominator fraction)
+  (cdr fraction))
+(define (make-fraction num denom)
+  (cons num denom))
+(define (next-rational-fraction fraction)
+  (let ([num (numerator fraction)]
+        [denom (denominator fraction)])
+    (cond [(= num 1)
+           (if (odd? denom)
+               (make-fraction num
+                              (1+ denom))
+               (make-fraction (1+ num)
+                              (1- denom)))]
+          [(= denom 1)
+           (if (odd? num)
+               (make-fraction (1- num)
+                              (1+ denom))
+               (make-fraction (1+ num)
+                              denom))]
+          [else (if (odd? (+ num denom))
+                    (make-fraction (1+ num)
+                                   (1- denom))
+                    (make-fraction (1- num)
+                                   (1+ denom)))])))
+(define rational-numbers
+  (make-stream next-rational-fraction
+               (make-fraction 1 1)))
+
+(stream-get-nth (make-stream (λ (x) (+ x 1))
+                             0)
                 100000)
-(stream-get-nth (make-stream (lambda (x) (+ x 1)) 0)
+(stream-get-nth (make-stream (λ (x) (+ x 1))
+                             0)
                 1000000)
-(stream-get-nth (make-stream (lambda (x) (+ x 1)) 0)
+(stream-get-nth (make-stream (λ (x) (+ x 1))
+                             0)
                 10000000)
