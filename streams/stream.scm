@@ -4,7 +4,9 @@
             stream-cdr
             stream-next
             stream-get-nth
-            natural-numbers))
+            position-in-stream
+            natural-numbers
+            rational-numbers))
 
 (define (make-stream proc start)
   (cons start
