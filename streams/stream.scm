@@ -60,12 +60,8 @@
   (make-stream next-rational-fraction
                (make-fraction 1 1)))
 
-(stream-get-nth (make-stream (λ (x) (+ x 1))
-                             0)
-                100000)
-(stream-get-nth (make-stream (λ (x) (+ x 1))
-                             0)
-                1000000)
-(stream-get-nth (make-stream (λ (x) (+ x 1))
-                             0)
-                10000000)
+(define (position-in-stream elem a-stream)
+  (define (iter stream n)
+    (cond [(equal? (stream-car stream) elem) n]
+          [else (iter (stream-next stream) (1+ n))]))
+  (iter a-stream 0))
